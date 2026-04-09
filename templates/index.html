@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center mt-5">
+    <h1>Welcome to DoubleR</h1>
+    <p class="lead">Personal & Group Expense Manager</p>
+
+    {% if session.get('username') %}
+        <p>You are logged in as <strong>{{ session['username'] }}</strong>.</p>
+
+        <div class="mt-4">
+            <a href="/expenses/personal" class="btn btn-primary me-2">My Personal Expenses</a>
+            <a href="/groups" class="btn btn-success">My Groups</a>
+        </div>
+    {% else %}
+        <p>Please login or register to continue.</p>
+
+        <div class="mt-4">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary me-2">Login</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-warning">Register</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>My Personal Expenses</h2>
+
+<div class="alert alert-info">
+    <strong>Total:</strong> {{ "%.2f"|format(total) }}
+</div>
+
+<a href="/expenses/personal/add" class="btn btn-success mb-3">Add Personal Expense</a>
+
+<ul class="list-group">
+    {% for e in expenses %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div>
+                <strong>{{ e["title"] }}</strong> -
+                {{ "%.2f"|format(e["amount"]) }}
+
+                {% if e["category"] %}
+                    ({{ e["category"] }})
+                {% endif %}
+            </div>
+
+            <div>
+                <a href="/expenses/personal/edit/{{ e['id'] }}"
+                   class="btn btn-warning btn-sm me-2">
+                    Edit
+                </a>
+
+                <a href="/expenses/personal/delete/{{ e['id'] }}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Are you sure you want to delete this expense?')">
+                    Delete
+                </a>
+            </div>
+
+        </li>
+    {% else %}
+        <li class="list-group-item">No personal expenses yet.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
