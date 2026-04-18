@@ -1,9 +1,9 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="py-4">
 
-    <!-- 🔙 Back Button -->
+    <!-- Back Button -->
     <div class="mb-3">
         <a href="/"
            class="btn btn-outline-dark-custom"
@@ -15,24 +15,24 @@
     <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-5">
         <div>
-            <h1 class="fw-bold mb-2" style="color: #212121;">My Groups</h1>
+            <h1 class="fw-bold mb-2" style="color: #212121;">My Personal Plans</h1>
             <p class="mb-0" style="color: #6B7280;">
-                Keep track of shared expenses in a simple and clear way.
+                Manage your personal budgets and expenses in a simple way.
             </p>
         </div>
 
-        <a href="/groups/create"
+        <a href="{{ url_for('personal_plan.create_personal_plan') }}"
            class="btn fw-semibold"
            style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
-            + Create Group
+            + Create Plan
         </a>
     </div>
 
-    {% if groups %}
+    {% if plans %}
         <div class="row g-4">
-            {% for group in groups %}
+            {% for plan in plans %}
                 <div class="col-12 col-md-6 col-lg-4">
-                    <a href="/groups/{{ group['id'] }}"
+                    <a href="{{ url_for('personal_plan.personal_plan_detail', plan_id=plan['id']) }}"
                        class="text-decoration-none">
                         <div class="h-100 p-4"
                              style="
@@ -55,27 +55,27 @@
                                         padding: 10px 14px;
                                         border-radius: 999px;
                                       ">
-                                    {{ group['member_count'] }} members
+                                    Total: {{ "%.2f"|format(plan["total"]) }}
                                 </span>
                             </div>
 
                             <!-- body -->
                             <h4 class="fw-bold mb-2" style="color: #212121;">
-                                {{ group['name'] }}
+                                {{ plan["title"] }}
                             </h4>
 
                             <p class="mb-3" style="color: #6B7280; min-height: 48px;">
-                                {{ group['description'] if group['description'] else 'Manage shared expenses, balances, and settlements with this group.' }}
+                                {{ plan["description"] if plan["description"] else "No description yet." }}
                             </p>
 
                             <p class="text-secondary small mb-4">
-                                Created at: {{ group["created_at"] }}
+                                Created at: {{ plan["created_at"] }}
                             </p>
 
                             <!-- bottom -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <span style="color: #6B7280; font-size: 14px;">
-                                    Open group
+                                    Open plan
                                 </span>
 
                                 <span class="fw-semibold" style="color: #212121;">
@@ -95,16 +95,17 @@
                 border: 1px dashed #e5e7eb;
                 border-radius: 24px;
              ">
-            <h4 class="fw-bold mb-2" style="color: #212121;">No groups yet</h4>
+            <h4 class="fw-bold mb-2" style="color: #212121;">No plans yet</h4>
             <p class="mb-4" style="color: #6B7280;">
-                Create your first group to start splitting expenses with friends.
+                Create your first personal plan to start tracking your expenses.
             </p>
-            <a href="/groups/create"
+            <a href="{{ url_for('personal_plan.create_personal_plan') }}"
                class="btn fw-semibold"
                style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
-                + Create Group
+                + Create Plan
             </a>
         </div>
     {% endif %}
+
 </div>
 {% endblock %}

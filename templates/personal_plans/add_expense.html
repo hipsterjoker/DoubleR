@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4">
+    <div class="card-soft p-4 p-md-5" style="max-width: 980px; margin: 0 auto;">
+        <h1 class="fw-bold mb-2" style="color: #212121; font-size: 48px;">
+            Add Expense
+        </h1>
+
+        <p class="mb-4" style="color: #6B7280; font-size: 16px;">
+            Plan: <strong style="color: #212121;">{{ plan["title"] }}</strong>
+        </p>
+
+        <form method="POST" action="{{ url_for('personal_plan.add_personal_plan_expense', plan_id=plan['id']) }}">
+            <div class="mb-4">
+                <label for="title" class="form-label" style="font-size: 18px;">Expense Title</label>
+                <input type="text"
+                       class="form-control"
+                       id="title"
+                       name="title"
+                       placeholder="e.g. Hotel, Food, Taxi"
+                       required
+                       style="font-size: 16px;">
+            </div>
+
+            <div class="mb-4">
+                <label for="amount" class="form-label" style="font-size: 18px;">Amount</label>
+                <input type="number"
+                       step="0.01"
+                       class="form-control"
+                       id="amount"
+                       name="amount"
+                       placeholder="Enter amount"
+                       required
+                       style="font-size: 16px;">
+            </div>
+
+            <div class="mb-4">
+                <label for="category" class="form-label" style="font-size: 18px;">Category</label>
+                <input type="text"
+                       class="form-control"
+                       id="category"
+                       name="category"
+                       placeholder="e.g. Transport, Food, Shopping"
+                       style="font-size: 16px;">
+            </div>
+
+            <div class="mb-4">
+                <label for="note" class="form-label" style="font-size: 18px;">Note</label>
+                <textarea class="form-control"
+                          id="note"
+                          name="note"
+                          rows="6"
+                          placeholder="Optional note..."
+                          style="font-size: 16px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="d-flex gap-3 flex-wrap">
+                <button type="submit"
+                        class="btn btn-yellow fw-semibold"
+                        style="padding: 12px 24px;">
+                    Save Expense
+                </button>
+
+                <a href="{{ url_for('personal_plan.personal_plan_detail', plan_id=plan['id']) }}"
+                   class="btn btn-outline-dark-custom fw-semibold"
+                   style="padding: 12px 24px;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

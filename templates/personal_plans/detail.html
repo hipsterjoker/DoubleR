@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4">
+
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{{ url_for('personal_plan.list_personal_plans') }}"
+           class="btn btn-outline-dark-custom"
+           style="border-radius: 12px; padding: 8px 16px;">
+            ← Back
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-5">
+        <div>
+            <p class="mb-2 fw-semibold" style="color: #B58105; font-size: 14px; letter-spacing: 0.5px;">
+                PERSONAL PLAN OVERVIEW
+            </p>
+            <h1 class="fw-bold mb-2" style="color: #212121; font-size: 48px;">
+                {{ plan["title"] }}
+            </h1>
+            <p class="mb-0" style="color: #6B7280; max-width: 720px;">
+                {{ plan["description"] if plan["description"] else "No description for this plan." }}
+            </p>
+        </div>
+
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ url_for('personal_plan.add_personal_plan_expense', plan_id=plan['id']) }}"
+               class="btn fw-semibold"
+               style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
+                + Add Expense
+            </a>
+        </div>
+    </div>
+
+    <!-- ✅ 优化后的 Total Card -->
+    <div class="mb-5"
+         style="
+            background: linear-gradient(135deg, #FFF3B0 0%, #FFE082 100%);
+            border-radius: 24px;
+            padding: 32px 36px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+         ">
+
+        <div class="d-flex flex-column gap-3">
+
+            <!-- label -->
+            <p class="mb-0 fw-semibold"
+               style="color: #7A5C00; font-size: 13px; letter-spacing: 0.6px;">
+                TOTAL BALANCE
+            </p>
+
+            <!-- title -->
+            <h3 class="fw-bold mb-2"
+                style="color: #212121;">
+                Current Plan Total
+            </h3>
+
+            <!-- number -->
+            <div class="fw-bold"
+                 style="color: #212121; font-size: 56px; line-height: 1;">
+                {{ "{:,.2f}".format(total) }}
+            </div>
+
+            <!-- description -->
+            <p class="mb-0"
+               style="color: #7A5C00; font-size: 14px;">
+                This is the total amount currently recorded in this personal plan.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Expense Records -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <h3 class="fw-bold mb-0" style="color: #212121;">Expense Records</h3>
+
+        {% if expenses %}
+            <span class="fw-semibold" style="color: #B58105; font-size: 14px;">
+                {{ expenses|length }} records
+            </span>
+        {% endif %}
+    </div>
+
+    {% if expenses %}
+        <div class="card-soft p-0 overflow-hidden">
+            <div class="list-group list-group-flush">
+                {% for expense in expenses %}
+                    <div class="list-group-item border-0 px-4 py-4"
+                         style="border-bottom: 1px solid #f3f4f6 !important; background-color: #ffffff;">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="d-flex justify-content-center align-items-center"
+                                     style="
+                                        width: 48px;
+                                        height: 48px;
+                                        border-radius: 50%;
+                                        background-color: #f8f8f8;
+                                        color: #212121;
+                                        font-weight: 700;
+                                        font-size: 18px;
+                                        flex-shrink: 0;
+                                     ">
+                                    {{ expense["title"][0]|upper }}
+                                </div>
+
+                                <div>
+                                    <h5 class="fw-bold mb-1" style="color: #212121;">
+                                        {{ expense["title"] }}
+                                    </h5>
+
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        <span style="color: #6B7280; font-size: 13px;">
+                                            {{ expense["category"] if expense["category"] else "No category" }}
+                                        </span>
+
+                                        <span style="color: #d1d5db;">•</span>
+
+                                        <span style="color: #6B7280; font-size: 13px;">
+                                            {{ expense["created_at"] }}
+                                        </span>
+                                    </div>
+
+                                    <p class="mb-0" style="color: #6B7280; font-size: 15px;">
+                                        {{ expense["note"] if expense["note"] else "No note provided." }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="text-md-end ms-auto">
+                                <div class="fw-bold mb-2" style="color: #212121; font-size: 22px;">
+                                    {{ "{:,.2f}".format(expense["amount"]) }}
+                                </div>
+
+                                <form method="POST"
+                                      action="{{ url_for('personal_plan.delete_personal_plan_expense', expense_id=expense['id']) }}"
+                                      onsubmit="return confirm('Delete this expense?');"
+                                      style="display:inline;">
+                                    <button type="submit"
+                                            class="btn btn-sm"
+                                            style="
+                                                border: 1px solid #e5e7eb;
+                                                background-color: #ffffff;
+                                                color: #6B7280;
+                                                border-radius: 12px;
+                                                padding: 8px 14px;
+                                                font-weight: 600;
+                                            ">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5 px-4"
+             style="
+                background-color: #ffffff;
+                border: 1px dashed #e5e7eb;
+                border-radius: 24px;
+             ">
+            <h4 class="fw-bold mb-2" style="color: #212121;">No expenses yet</h4>
+            <p class="mb-4" style="color: #6B7280;">
+                Add your first expense to start tracking this plan.
+            </p>
+            <a href="{{ url_for('personal_plan.add_personal_plan_expense', plan_id=plan['id']) }}"
+               class="btn fw-semibold"
+               style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
+                + Add First Expense
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

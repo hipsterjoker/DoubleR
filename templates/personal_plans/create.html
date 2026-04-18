@@ -4,26 +4,28 @@
 <div class="py-4">
     <div class="card-soft p-4 p-md-5" style="max-width: 980px; margin: 0 auto;">
         <h1 class="fw-bold mb-4" style="color: #212121; font-size: 48px;">
-            Create Group
+            Create Personal Plan
         </h1>
 
-        <form method="POST">
+        <form method="POST" action="{{ url_for('personal_plan.create_personal_plan') }}">
             <div class="mb-4">
-                <label class="form-label" style="font-size: 18px;">Group Name</label>
+                <label for="title" class="form-label" style="font-size: 18px;">Plan Title</label>
                 <input type="text"
-                       name="name"
                        class="form-control"
-                       placeholder="e.g. Roommates, Korea Trip, Weekend Plan"
+                       id="title"
+                       name="title"
+                       placeholder="e.g. Korea Trip, April Budget, Shopping Plan"
                        required
                        style="font-size: 16px;">
             </div>
 
             <div class="mb-4">
-                <label class="form-label" style="font-size: 18px;">Description</label>
-                <textarea name="description"
-                          class="form-control"
+                <label for="description" class="form-label" style="font-size: 18px;">Description</label>
+                <textarea class="form-control"
+                          id="description"
+                          name="description"
                           rows="6"
-                          placeholder="Optional description for this group..."
+                          placeholder="Optional description for this plan..."
                           style="font-size: 16px; resize: vertical;"></textarea>
             </div>
 
@@ -31,10 +33,10 @@
                 <button type="submit"
                         class="btn btn-yellow fw-semibold"
                         style="padding: 12px 24px;">
-                    Create Group
+                    Create Plan
                 </button>
 
-                <a href="{{ url_for('group.list_groups') }}"
+                <a href="{{ url_for('personal_plan.list_personal_plans') }}"
                    class="btn btn-outline-dark-custom fw-semibold"
                    style="padding: 12px 24px;">
                     Cancel

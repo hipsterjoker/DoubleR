@@ -1,24 +1,145 @@
 {% extends 'base.html' %}
 
+{% block page_background %}
+<div class="auth-bg"></div>
+{% endblock %}
+
 {% block content %}
-<div class="text-center mt-5">
-    <h1>Welcome to DoubleR</h1>
-    <p class="lead">Personal & Group Expense Manager</p>
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center justify-content-center" style="min-height: 82vh;">
+            <div class="col-lg-10 text-center">
 
-    {% if session.get('username') %}
-        <p>You are logged in as <strong>{{ session['username'] }}</strong>.</p>
+                <div class="mb-4">
+                    <span class="badge rounded-pill px-4 py-2"
+                          style="background-color: #FFF3CD; color: #B58105; font-size: 14px; font-weight: 600;">
+                        Simple expense management for students and groups
+                    </span>
+                </div>
 
-        <div class="mt-4">
-            <a href="/expenses/personal" class="btn btn-primary me-2">My Personal Expenses</a>
-            <a href="/groups" class="btn btn-success">My Groups</a>
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center gap-3 flex-wrap justify-content-center">
+                        <div class="d-flex justify-content-center align-items-center shadow-sm"
+                             style="width: 72px; height: 72px; background-color: #FFC107; border-radius: 20px;">
+                            <span style="font-size: 32px;">💼</span>
+                        </div>
+                        <div class="text-start text-md-start text-center">
+                            <h1 class="fw-bold mb-1" style="color: #212121; font-size: 48px;">DoubleR</h1>
+                            <p class="mb-0" style="color: #6B7280; font-size: 18px;">
+                                Personal &amp; Group Expense Manager
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h2 class="fw-bold mx-auto"
+                        style="color: #212121; font-size: 52px; line-height: 1.2; max-width: 850px;">
+                        Manage personal spending and shared group expenses in one place
+                    </h2>
+                </div>
+
+                <div class="mb-5">
+                    <p class="mx-auto mb-3" style="color: #6B7280; font-size: 19px; max-width: 760px; line-height: 1.8;">
+                        DoubleR helps users record personal expenses, create groups, add shared payments,
+                        and clearly see how costs are divided between members.
+                    </p>
+                    <p class="mx-auto mb-0" style="color: #6B7280; font-size: 18px; max-width: 720px; line-height: 1.8;">
+                        It is designed for students, friends, roommates, and small travel groups who want
+                        a simple way to manage money together.
+                    </p>
+                </div>
+
+                {% if session.get('username') %}
+                    <div class="mb-5">
+                        <p class="mb-4" style="color: #6B7280; font-size: 17px;">
+                            Welcome back, <strong style="color: #212121;">{{ session['username'] }}</strong>！
+                        </p>
+
+                        <div class="d-flex justify-content-center flex-wrap gap-3">
+                            <a href="{{ url_for('personal_plan.list_personal_plans') }}"
+                               class="btn"
+                               style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 14px 26px; font-weight: 700; font-size: 16px;">
+                                My Plans
+                            </a>
+
+                            <a href="/groups"
+                               class="btn"
+                               style="border: 1px solid #212121; color: #212121; border-radius: 16px; padding: 14px 26px; font-weight: 700; font-size: 16px; background-color: #ffffff;">
+                                My Groups
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="mb-5">
+                        <p class="mb-4" style="color: #6B7280; font-size: 17px;">
+                            Login or create an account to start managing your expenses.
+                        </p>
+
+                        <div class="d-flex justify-content-center flex-wrap gap-3">
+                            <a href="{{ url_for('auth.login') }}"
+                               class="btn"
+                               style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 14px 28px; font-weight: 700; font-size: 16px;">
+                                Login
+                            </a>
+
+                            <a href="{{ url_for('auth.register') }}"
+                               class="btn"
+                               style="border: 1px solid #212121; color: #212121; border-radius: 16px; padding: 14px 28px; font-weight: 700; font-size: 16px; background-color: #ffffff;">
+                                Register
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="row g-4 mt-2 justify-content-center">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="h-100 p-4 shadow-sm"
+                             style="background-color: #ffffff; border-radius: 28px; border: 1px solid #f1f1f1;">
+                            <div class="mb-3" style="font-size: 30px;">📒</div>
+                            <h5 class="fw-bold mb-2" style="color: #212121; font-size: 20px;">Personal Expenses</h5>
+                            <p class="mb-0" style="color: #6B7280; font-size: 15px; line-height: 1.7;">
+                                Track your daily expenses and keep your personal spending records organized.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="h-100 p-4 shadow-sm"
+                             style="background-color: #ffffff; border-radius: 28px; border: 1px solid #f1f1f1;">
+                            <div class="mb-3" style="font-size: 30px;">👥</div>
+                            <h5 class="fw-bold mb-2" style="color: #212121; font-size: 20px;">Group Management</h5>
+                            <p class="mb-0" style="color: #6B7280; font-size: 15px; line-height: 1.7;">
+                                Create groups, manage members, and organize shared expenses more clearly.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="h-100 p-4 shadow-sm"
+                             style="background-color: #ffffff; border-radius: 28px; border: 1px solid #f1f1f1;">
+                            <div class="mb-3" style="font-size: 30px;">💳</div>
+                            <h5 class="fw-bold mb-2" style="color: #212121; font-size: 20px;">Shared Payments</h5>
+                            <p class="mb-0" style="color: #6B7280; font-size: 15px; line-height: 1.7;">
+                                Add shared transactions so every payment in the group is easy to record.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="h-100 p-4 shadow-sm"
+                             style="background-color: #ffffff; border-radius: 28px; border: 1px solid #f1f1f1;">
+                            <div class="mb-3" style="font-size: 30px;">⚖️</div>
+                            <h5 class="fw-bold mb-2" style="color: #212121; font-size: 20px;">Debt Summary</h5>
+                            <p class="mb-0" style="color: #6B7280; font-size: 15px; line-height: 1.7;">
+                                See how expenses are divided and understand who owes whom in the group.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-    {% else %}
-        <p>Please login or register to continue.</p>
-
-        <div class="mt-4">
-            <a href="{{ url_for('auth.login') }}" class="btn btn-primary me-2">Login</a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-warning">Register</a>
-        </div>
-    {% endif %}
-</div>
+    </div>
+</section>
 {% endblock %}
