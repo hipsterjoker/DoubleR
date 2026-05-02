@@ -3,16 +3,13 @@
 {% block content %}
 <div class="py-4">
 
-    <!-- 🔙 Back -->
     <div class="mb-3">
-        <a href="{{ url_for('group.list_groups') }}"
-           class="btn btn-outline-dark-custom"
-           style="border-radius: 12px; padding: 8px 16px;">
+        <a href="{{ url_for('group.list_groups') }}" class="btn btn-outline-dark-custom"
+            style="border-radius: 12px; padding: 8px 16px;">
             ← Back
         </a>
     </div>
 
-    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
         <div>
             <p class="mb-2 fw-semibold" style="color:#B58105; font-size:14px;">
@@ -26,41 +23,46 @@
             </p>
         </div>
 
-        <a href="{{ url_for('group.add_group_expense', group_id=group['id']) }}"
-           class="btn fw-semibold"
-           style="background-color:#FFC107; color:#212121; border-radius:16px; padding:12px 20px;">
-            + Add Expense
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ url_for('group.add_group_expense', group_id=group['id']) }}" class="btn fw-semibold"
+                style="background-color:#FFC107; color:#212121; border-radius:16px; padding:12px 20px;">
+                + Add Expense
+            </a>
+
+            <a href="{{ url_for('group.group_settlements', group_id=group['id']) }}" class="btn fw-semibold"
+                style="border: 1.5px solid #e5e7eb; background-color:#ffffff; color:#212121; border-radius:16px; padding:12px 20px;">
+                View Settlements
+            </a>
+        </div>
     </div>
 
-    <!-- SUMMARY -->
     <div class="row g-4 mb-5">
 
         <div class="col-md-3">
-            <div class="card-soft p-4">
-                <p class="mb-2" style="color:#6B7280;">Total</p>
-                <h3 class="fw-bold">{{ "{:,.2f}".format(total) }}</h3>
+            <div class="card-soft p-4" style="background: linear-gradient(135deg, #FFF3B0 0%, #FFE082 100%); border: none; box-shadow: 0 10px 24px rgba(0,0,0,0.05);">
+                <p class="mb-2 fw-semibold" style="color: #7A5C00;">Total</p>
+                <h3 class="fw-bold" style="color: #212121;">{{ "{:,.0f}".format(total) }}</h3>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card-soft p-4">
-                <p class="mb-2" style="color:#6B7280;">My Paid</p>
-                <h3 class="fw-bold">{{ "{:,.2f}".format(my_summary["paid"]) }}</h3>
+            <div class="card-soft p-4" style="background-color: #ffffff; border: 2px solid #FFE082;">
+                <p class="mb-2" style="color: #8A7000;">My Paid</p>
+                <h3 class="fw-bold" style="color: #212121;">{{ "{:,.0f}".format(my_summary["paid"]) }}</h3>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="card-soft p-4">
                 <p class="mb-2" style="color:#6B7280;">I Owe</p>
-                <h3 class="fw-bold text-danger">{{ "{:,.2f}".format(my_summary["owe"]) }}</h3>
+                <h3 class="fw-bold text-danger">{{ "{:,.0f}".format(my_summary["owe"]) }}</h3>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="card-soft p-4">
                 <p class="mb-2" style="color:#6B7280;">Owed To Me</p>
-                <h3 class="fw-bold text-success">{{ "{:,.2f}".format(my_summary["owed_to_me"]) }}</h3>
+                <h3 class="fw-bold text-success">{{ "{:,.0f}".format(my_summary["owed_to_me"]) }}</h3>
             </div>
         </div>
 
@@ -68,10 +70,8 @@
 
     <div class="row g-4">
 
-        <!-- LEFT -->
         <div class="col-lg-8">
 
-            <!-- DEBT -->
             <h4 class="fw-bold mb-3">Debt Summary</h4>
 
             <div class="row g-3 mb-4">
@@ -81,12 +81,12 @@
                         <h6 class="mb-3">I Owe</h6>
 
                         {% for d in my_debts %}
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>{{ d["creditor_name"] }}</span>
-                                <span class="text-danger">{{ "%.2f"|format(d["amount"]) }}</span>
-                            </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{{ d["creditor_name"] }}</span>
+                            <span class="text-danger">{{ "%.0f"|format(d["amount"]) }}</span>
+                        </div>
                         {% else %}
-                            <p class="text-muted mb-0">None</p>
+                        <p class="text-muted mb-0">None</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -96,19 +96,18 @@
                         <h6 class="mb-3">Owes Me</h6>
 
                         {% for d in owes_me %}
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>{{ d["debtor_name"] }}</span>
-                                <span class="text-success">{{ "%.2f"|format(d["amount"]) }}</span>
-                            </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{{ d["debtor_name"] }}</span>
+                            <span class="text-success">{{ "%.0f"|format(d["amount"]) }}</span>
+                        </div>
                         {% else %}
-                            <p class="text-muted mb-0">None</p>
+                        <p class="text-muted mb-0">None</p>
                         {% endfor %}
                     </div>
                 </div>
 
             </div>
 
-            <!-- EXPENSES -->
             <div class="d-flex justify-content-between mb-3">
                 <h4 class="fw-bold">Recent Expenses</h4>
             </div>
@@ -117,40 +116,34 @@
 
                 {% for e in expenses %}
                 <div class="d-flex justify-content-between align-items-center px-4 py-3"
-                     style="border-bottom:1px solid #f3f4f6;">
+                    style="border-bottom:1px solid #f3f4f6;">
 
-                    <!-- 左 -->
                     <div>
                         <h6 class="mb-1 fw-semibold">{{ e["title"] }}</h6>
 
                         <small style="color:#6B7280;">
                             {{ e["payer_name"] }}
                             {% if e["category"] %} · {{ e["category"] }}{% endif %}
-                            · {{ e["created_at"] }}
+                            · {{ e["created_at"] | localtime }}
                         </small>
 
                         {% if e["note"] %}
-                            <div style="color:#6B7280; font-size:14px; margin-top:4px;">
-                                {{ e["note"] }}
-                            </div>
+                        <div style="color:#6B7280; font-size:14px; margin-top:4px;">
+                            {{ e["note"] }}
+                        </div>
                         {% endif %}
                     </div>
 
-                    <!-- 右 -->
                     <div class="d-flex align-items-center gap-3">
 
                         <div class="fw-bold">
-                            {{ "{:,.2f}".format(e["amount"]) }}
+                            {{ "{:,.0f}".format(e["amount"]) }}
                         </div>
 
-                        <!-- DELETE -->
                         <form method="POST"
-                              action="{{ url_for('group.delete_group_expense', expense_id=e['id'], group_id=group['id']) }}"
-                              onsubmit="return confirm('Delete this expense?');"
-                              style="display:inline;">
-                            <button type="submit"
-                                    class="btn btn-sm"
-                                    style="
+                            action="{{ url_for('group.delete_group_expense', expense_id=e['id'], group_id=group['id']) }}"
+                            onsubmit="return confirm('Delete this expense?');" style="display:inline;">
+                            <button type="submit" class="btn btn-sm" style="
                                         border: 1px solid #e5e7eb;
                                         background-color: #ffffff;
                                         color: #6B7280;
@@ -171,14 +164,13 @@
 
         </div>
 
-        <!-- RIGHT -->
         <div class="col-lg-4">
 
             <div class="card-soft p-4 mb-4">
                 <h5 class="fw-bold mb-3">Group Members</h5>
 
                 {% for m in members %}
-                    <div class="mb-2">{{ m["username"] }}</div>
+                <div class="mb-2">{{ m["username"] }}</div>
                 {% endfor %}
             </div>
 
@@ -186,10 +178,7 @@
                 <h6 class="fw-bold mb-3">Invite Member</h6>
 
                 <form method="POST" action="/groups/{{ group['id'] }}/invite">
-                    <input type="text"
-                           name="username"
-                           class="form-control mb-2"
-                           placeholder="Username">
+                    <input type="text" name="username" class="form-control mb-2" placeholder="Username">
 
                     <button class="btn btn-yellow w-100">
                         Send
@@ -197,11 +186,22 @@
                 </form>
             </div>
 
-            <form method="POST" action="/groups/delete/{{ group['id'] }}">
+            {% if group['created_by'] == session['user_id'] %}
+            <form method="POST" action="/groups/delete/{{ group['id'] }}"
+                onsubmit="return confirm('Delete this group and all its data? This cannot be undone.');">
                 <button class="btn btn-outline-danger w-100">
                     Delete Group
                 </button>
             </form>
+            {% else %}
+            <form method="POST" action="{{ url_for('group.leave_group', group_id=group['id']) }}"
+                onsubmit="return confirm('Leave this group? Your past expenses and settlements remain visible.');">
+                <button type="submit" class="btn w-100 fw-semibold"
+                    style="border: 1.5px solid #e5e7eb; background-color:#ffffff; color:#6B7280; border-radius:16px; padding:10px 18px;">
+                    Leave Group
+                </button>
+            </form>
+            {% endif %}
 
         </div>
 

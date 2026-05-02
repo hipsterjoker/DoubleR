@@ -11,6 +11,10 @@ def register():
         email = request.form["email"]
         password = request.form["password"]
 
+        if len(password) < 8:
+            flash("Password must be at least 8 characters.", "danger")
+            return redirect(url_for("auth.register"))
+
         conn = get_db_connection()
 
         existing_user = conn.execute(

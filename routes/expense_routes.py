@@ -56,7 +56,15 @@ def add_personal_expense():
         flash("Personal expense added successfully.", "success")
         return redirect(url_for("expense.personal_expenses"))
 
-    return render_template("expenses/add_personal.html")
+    user_id = session["user_id"]
+    conn = get_db_connection()
+    categories = conn.execute("""
+        SELECT name FROM categories
+        WHERE user_id IS NULL OR user_id = ?
+        ORDER BY user_id IS NULL DESC, name ASC
+    """, (user_id,)).fetchall()
+    conn.close()
+    return render_template("expenses/add_personal.html", categories=categories)
 
 
 @expense_bp.route("/personal/delete/<int:expense_id>")
@@ -121,5 +129,10 @@ def edit_personal_expense(expense_id):
         flash("Expense updated successfully.", "success")
         return redirect(url_for("expense.personal_expenses"))
 
+    categories = conn.execute("""
+        SELECT name FROM categories
+        WHERE user_id IS NULL OR user_id = ?
+        ORDER BY user_id IS NULL DESC, name ASC
+    """, (session["user_id"],)).fetchall()
     conn.close()
-    return render_template("expenses/edit_personal.html", expense=expense)
+    return render_template("expenses/edit_personal.html", expense=expense, categories=categories)

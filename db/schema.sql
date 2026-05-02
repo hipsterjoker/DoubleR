@@ -80,7 +80,6 @@ CREATE TABLE settlements (
     FOREIGN KEY (creditor_id) REFERENCES users(id)
 );
 
--- Personal plans table
 CREATE TABLE personal_plans (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -90,7 +89,6 @@ CREATE TABLE personal_plans (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- Personal plan expenses table
 CREATE TABLE personal_plan_expenses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     plan_id INTEGER NOT NULL,

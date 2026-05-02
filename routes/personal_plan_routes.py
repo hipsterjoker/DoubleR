@@ -1,22 +1,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-import sqlite3
+from db.connection import get_db_connection
 
 personal_plan_bp = Blueprint("personal_plan", __name__)
 
 
-def get_db_connection():
-    conn = sqlite3.connect("database.db")
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def login_required():
-    return "user_id" in session
-
-
 @personal_plan_bp.route("/personal-plans")
 def list_personal_plans():
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     user_id = session["user_id"]
@@ -42,7 +32,7 @@ def list_personal_plans():
 
 @personal_plan_bp.route("/personal-plans/create", methods=["GET", "POST"])
 def create_personal_plan():
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     if request.method == "POST":
@@ -70,7 +60,7 @@ def create_personal_plan():
 
 @personal_plan_bp.route("/personal-plans/<int:plan_id>")
 def personal_plan_detail(plan_id):
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     user_id = session["user_id"]
@@ -113,7 +103,7 @@ def personal_plan_detail(plan_id):
 
 @personal_plan_bp.route("/personal-plans/<int:plan_id>/add-expense", methods=["GET", "POST"])
 def add_personal_plan_expense(plan_id):
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     user_id = session["user_id"]
@@ -158,13 +148,18 @@ def add_personal_plan_expense(plan_id):
         flash("Expense added successfully!", "success")
         return redirect(url_for("personal_plan.personal_plan_detail", plan_id=plan_id))
 
+    categories = conn.execute("""
+        SELECT name FROM categories
+        WHERE user_id IS NULL OR user_id = ?
+        ORDER BY user_id IS NULL DESC, name ASC
+    """, (user_id,)).fetchall()
     conn.close()
-    return render_template("personal_plans/add_expense.html", plan=plan)
+    return render_template("personal_plans/add_expense.html", plan=plan, categories=categories)
 
 
 @personal_plan_bp.route("/personal-plans/expense/<int:expense_id>/delete", methods=["POST"])
 def delete_personal_plan_expense(expense_id):
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     user_id = session["user_id"]
@@ -196,7 +191,7 @@ def delete_personal_plan_expense(expense_id):
 
 @personal_plan_bp.route("/personal-plans/<int:plan_id>/delete", methods=["POST"])
 def delete_personal_plan(plan_id):
-    if not login_required():
+    if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     user_id = session["user_id"]

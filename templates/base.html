@@ -225,6 +225,30 @@
                     My Groups
                 </a>
 
+                <a href="{{ url_for('notification.notifications') }}"
+                   class="btn btn-outline-dark-custom btn-sm"
+                   style="position: relative;">
+                    Notifications
+                    {% if notification_count > 0 %}
+                        <span style="
+                            position: absolute;
+                            top: -6px;
+                            right: -6px;
+                            background-color: #FFC107;
+                            color: #212121;
+                            font-size: 11px;
+                            font-weight: 700;
+                            border-radius: 50%;
+                            width: 18px;
+                            height: 18px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            line-height: 1;
+                        ">{{ notification_count }}</span>
+                    {% endif %}
+                </a>
+
                 <span class="ms-2 username">
                     Hello, {{ session['username'] }}
                 </span>

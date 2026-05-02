@@ -3,16 +3,12 @@
 {% block content %}
 <div class="py-4">
 
-    <!-- Back Button -->
     <div class="mb-3">
-        <a href="/"
-           class="btn btn-outline-dark-custom"
-           style="border-radius: 12px; padding: 8px 16px;">
+        <a href="/" class="btn btn-outline-dark-custom" style="border-radius: 12px; padding: 8px 16px;">
             ← Back
         </a>
     </div>
 
-    <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-5">
         <div>
             <h1 class="fw-bold mb-2" style="color: #212121;">My Personal Plans</h1>
@@ -21,90 +17,82 @@
             </p>
         </div>
 
-        <a href="{{ url_for('personal_plan.create_personal_plan') }}"
-           class="btn fw-semibold"
-           style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
+        <a href="{{ url_for('personal_plan.create_personal_plan') }}" class="btn fw-semibold"
+            style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
             + Create Plan
         </a>
     </div>
 
     {% if plans %}
-        <div class="row g-4">
-            {% for plan in plans %}
-                <div class="col-12 col-md-6 col-lg-4">
-                    <a href="{{ url_for('personal_plan.personal_plan_detail', plan_id=plan['id']) }}"
-                       class="text-decoration-none">
-                        <div class="h-100 p-4"
-                             style="
+    <div class="row g-4">
+        {% for plan in plans %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="{{ url_for('personal_plan.personal_plan_detail', plan_id=plan['id']) }}"
+                class="text-decoration-none">
+                <div class="h-100 p-4" style="
                                 background-color: #ffffff;
                                 border: 1px solid #f1f1f1;
                                 border-radius: 24px;
                                 box-shadow: 0 12px 30px rgba(0,0,0,0.06);
                                 transition: 0.2s ease;
                              "
-                             onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 36px rgba(0,0,0,0.09)';"
-                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 12px 30px rgba(0,0,0,0.06)';">
+                    onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 36px rgba(0,0,0,0.09)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 12px 30px rgba(0,0,0,0.06)';">
 
-                            <!-- top -->
-                            <div class="d-flex justify-content-end mb-4">
-                                <span class="badge"
-                                      style="
+                    <div class="d-flex justify-content-end mb-4">
+                        <span class="badge" style="
                                         background-color: #FFE082;
                                         color: #7A5C00;
                                         font-weight: 600;
                                         padding: 10px 14px;
                                         border-radius: 999px;
                                       ">
-                                    Total: {{ "%.2f"|format(plan["total"]) }}
-                                </span>
-                            </div>
+                            Total: {{ "%.0f"|format(plan["total"]) }}
+                        </span>
+                    </div>
 
-                            <!-- body -->
-                            <h4 class="fw-bold mb-2" style="color: #212121;">
-                                {{ plan["title"] }}
-                            </h4>
+                    <h4 class="fw-bold mb-2" style="color: #212121;">
+                        {{ plan["title"] }}
+                    </h4>
 
-                            <p class="mb-3" style="color: #6B7280; min-height: 48px;">
-                                {{ plan["description"] if plan["description"] else "No description yet." }}
-                            </p>
+                    <p class="mb-3" style="color: #6B7280; min-height: 48px;">
+                        {{ plan["description"] if plan["description"] else "No description" }}
+                    </p>
 
-                            <p class="text-secondary small mb-4">
-                                Created at: {{ plan["created_at"] }}
-                            </p>
+                    <p class="text-secondary small mb-4">
+                        Created at: {{ plan["created_at"] | localtime }}
+                    </p>
 
-                            <!-- bottom -->
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span style="color: #6B7280; font-size: 14px;">
-                                    Open plan
-                                </span>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span style="color: #6B7280; font-size: 14px;">
+                            Open plan
+                        </span>
 
-                                <span class="fw-semibold" style="color: #212121;">
-                                    →
-                                </span>
-                            </div>
+                        <span class="fw-semibold" style="color: #212121;">
+                            →
+                        </span>
+                    </div>
 
-                        </div>
-                    </a>
                 </div>
-            {% endfor %}
+            </a>
         </div>
+        {% endfor %}
+    </div>
     {% else %}
-        <div class="text-center py-5 px-4"
-             style="
+    <div class="text-center py-5 px-4" style="
                 background-color: #ffffff;
                 border: 1px dashed #e5e7eb;
                 border-radius: 24px;
              ">
-            <h4 class="fw-bold mb-2" style="color: #212121;">No plans yet</h4>
-            <p class="mb-4" style="color: #6B7280;">
-                Create your first personal plan to start tracking your expenses.
-            </p>
-            <a href="{{ url_for('personal_plan.create_personal_plan') }}"
-               class="btn fw-semibold"
-               style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
-                + Create Plan
-            </a>
-        </div>
+        <h4 class="fw-bold mb-2" style="color: #212121;">No plans yet</h4>
+        <p class="mb-4" style="color: #6B7280;">
+            Create your first personal plan to start tracking your expenses.
+        </p>
+        <a href="{{ url_for('personal_plan.create_personal_plan') }}" class="btn fw-semibold"
+            style="background-color: #FFC107; color: #212121; border-radius: 16px; padding: 12px 20px;">
+            + Create Plan
+        </a>
+    </div>
     {% endif %}
 
 </div>

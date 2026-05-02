@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4">
+
+    <div class="mb-5">
+        <p class="mb-2 fw-semibold" style="color:#B58105; font-size:14px;">
+            INBOX
+        </p>
+        <h1 class="fw-bold mb-2" style="color:#212121; font-size:48px;">
+            Notifications
+        </h1>
+        <p class="mb-0" style="color:#6B7280;">
+            Group invitations and alerts will appear here.
+        </p>
+    </div>
+
+    {% if invitations %}
+
+    <div class="card-soft p-0 overflow-hidden">
+        {% for inv in invitations %}
+        <div class="px-4 py-4" style="border-bottom: 1px solid #f3f4f6; background-color: #ffffff;">
+
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                <div>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <div style="
+                                    width: 44px;
+                                    height: 44px;
+                                    border-radius: 50%;
+                                    background-color: #FFF9E6;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 20px;
+                                    flex-shrink: 0;
+                                ">👥</div>
+
+                        <div>
+                            <h5 class="fw-bold mb-0" style="color:#212121;">
+                                Group Invitation
+                            </h5>
+                            <small style="color:#6B7280;">
+                                {{ inv["created_at"] | localtime }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <p class="mb-0" style="color:#6B7280; font-size:15px;">
+                        <strong style="color:#212121;">{{ inv["sender_name"] }}</strong>
+                        invited you to join
+                        <strong style="color:#212121;">{{ inv["group_name"] }}</strong>.
+                    </p>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <form method="POST" action="{{ url_for('notification.accept_invitation', inv_id=inv['id']) }}"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-yellow fw-semibold"
+                            style="border-radius:12px; padding:8px 18px;">
+                            Accept
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('notification.reject_invitation', inv_id=inv['id']) }}"
+                        style="display:inline;" onsubmit="return confirm('Reject this invitation?');">
+                        <button type="submit" class="btn fw-semibold"
+                            style="border:1.5px solid #e5e7eb; background-color:#ffffff; color:#6B7280; border-radius:12px; padding:8px 18px;">
+                            Reject
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5 px-4" style="background-color:#ffffff; border:1px dashed #e5e7eb; border-radius:24px;">
+        <div style="font-size:48px; margin-bottom:16px;">🔔</div>
+        <h4 class="fw-bold mb-2" style="color:#212121;">No new notifications</h4>
+        <p class="mb-0" style="color:#6B7280;">
+            You're all caught up! Group invitations will appear here.
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

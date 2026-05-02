@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4">
+
+    <div class="mb-3">
+        <a href="{{ url_for('group.group_detail', group_id=group['id']) }}" class="btn btn-outline-dark-custom"
+            style="border-radius: 12px; padding: 8px 16px;">
+            ← Back to Group
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+        <div>
+            <p class="mb-2 fw-semibold" style="color:#B58105; font-size:14px;">
+                SETTLEMENT OVERVIEW
+            </p>
+            <h1 class="fw-bold mb-2" style="color:#212121; font-size:48px;">
+                Settlements
+            </h1>
+            <p class="mb-0" style="color:#6B7280;">
+                Group: <strong style="color:#212121;">{{ group["name"] }}</strong>
+            </p>
+        </div>
+    </div>
+
+    {% if settlements %}
+
+    <div class="d-flex gap-3 flex-wrap mb-4">
+        <span class="d-flex align-items-center gap-2" style="font-size:13px; color:#6B7280;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#22c55e;"></span>
+            Fully Paid
+        </span>
+        <span class="d-flex align-items-center gap-2" style="font-size:13px; color:#6B7280;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#FFC107;"></span>
+            Pending
+        </span>
+    </div>
+
+    <div class="card-soft p-0 overflow-hidden">
+        {% for s in settlements %}
+        {% set is_paid = (s["debtor_checked"] == 1 and s["creditor_checked"] == 1) %}
+        <div class="px-4 py-4"
+            style="border-bottom: 1px solid #f3f4f6; background-color: {% if is_paid %}#f9fafb{% else %}#ffffff{% endif %};">
+
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                        <span class="fw-bold" style="color:#212121;">{{ s["debtor_name"] }}</span>
+                        <span style="color:#6B7280;">owes</span>
+                        <span class="fw-bold" style="color:#212121;">{{ s["creditor_name"] }}</span>
+                    </div>
+
+                    <div class="mb-2" style="color:#6B7280; font-size:13px;">
+                        For: {{ s["expense_title"] }}
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        {% if is_paid %}
+                        <span style="
+                                        background-color:#dcfce7;
+                                        color:#16a34a;
+                                        border-radius:20px;
+                                        padding:3px 12px;
+                                        font-size:12px;
+                                        font-weight:700;
+                                    ">✓ Fully Paid</span>
+                        {% else %}
+                        <span style="
+                                        background-color:#FFF9E6;
+                                        color:#B58105;
+                                        border-radius:20px;
+                                        padding:3px 12px;
+                                        font-size:12px;
+                                        font-weight:700;
+                                    ">Pending</span>
+
+                        {% if s["debtor_checked"] == 1 %}
+                        <span
+                            style="background-color:#dcfce7; color:#16a34a; border-radius:20px; padding:3px 12px; font-size:12px; font-weight:600;">
+                            Debtor confirmed
+                        </span>
+                        {% endif %}
+
+                        {% if s["creditor_checked"] == 1 %}
+                        <span
+                            style="background-color:#dcfce7; color:#16a34a; border-radius:20px; padding:3px 12px; font-size:12px; font-weight:600;">
+                            Creditor confirmed
+                        </span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="text-end d-flex flex-column align-items-end gap-2">
+                    <div class="fw-bold" style="color:#212121; font-size:22px;">
+                        {{ "%.0f"|format(s["amount"]) }}
+                    </div>
+
+                    {% if not is_paid %}
+                    {% if s["debtor_id"] == user_id %}
+                    <form method="POST"
+                        action="{{ url_for('group.toggle_settlement_page', settlement_id=s['id'], group_id=group['id']) }}"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-sm fw-semibold"
+                            style="{% if s['debtor_checked'] == 1 %}background-color:#dcfce7; color:#16a34a;{% else %}background-color:#FFC107; color:#212121;{% endif %} border-radius:12px; padding:6px 14px; border:none;">
+                            {% if s["debtor_checked"] == 1 %}✓ I Paid{% else %}Mark as Paid{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    {% if s["creditor_id"] == user_id %}
+                    <form method="POST"
+                        action="{{ url_for('group.toggle_settlement_page', settlement_id=s['id'], group_id=group['id']) }}"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-sm fw-semibold"
+                            style="{% if s['creditor_checked'] == 1 %}background-color:#dcfce7; color:#16a34a;{% else %}border:1.5px solid #e5e7eb; background-color:#ffffff; color:#212121;{% endif %} border-radius:12px; padding:6px 14px;">
+                            {% if s["creditor_checked"] == 1 %}✓ Received{% else %}Confirm Received{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-5 px-4" style="background-color:#ffffff; border:1px dashed #e5e7eb; border-radius:24px;">
+        <h4 class="fw-bold mb-2" style="color:#212121;">No settlements yet</h4>
+        <p class="mb-0" style="color:#6B7280;">Settlements will appear here once group expenses are added.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

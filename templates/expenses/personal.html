@@ -4,7 +4,7 @@
 <h2>My Personal Expenses</h2>
 
 <div class="alert alert-info">
-    <strong>Total:</strong> {{ "%.2f"|format(total) }}
+    <strong>Total:</strong> {{ "%.0f"|format(total) }}
 </div>
 
 <a href="/expenses/personal/add" class="btn btn-success mb-3">Add Personal Expense</a>
@@ -15,7 +15,7 @@
 
             <div>
                 <strong>{{ e["title"] }}</strong> -
-                {{ "%.2f"|format(e["amount"]) }}
+                {{ "%.0f"|format(e["amount"]) }}
 
                 {% if e["category"] %}
                     ({{ e["category"] }})

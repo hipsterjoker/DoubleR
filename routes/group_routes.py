@@ -253,20 +253,6 @@ def group_detail(group_id):
             ORDER BY s.id DESC
         """, (group_id, user_id)).fetchall()
 
-        settlements = conn.execute("""
-            SELECT
-                s.*,
-                ge.title AS expense_title,
-                debtor.username AS debtor_name,
-                creditor.username AS creditor_name
-            FROM settlements s
-            JOIN group_expenses ge ON ge.id = s.expense_id
-            JOIN users debtor ON debtor.id = s.debtor_id
-            JOIN users creditor ON creditor.id = s.creditor_id
-            WHERE s.group_id = ?
-            ORDER BY s.id DESC
-        """, (group_id,)).fetchall()
-
         return render_template(
             "groups/detail.html",
             group=group,
@@ -276,7 +262,6 @@ def group_detail(group_id):
             my_summary=my_summary,
             my_debts=my_debts,
             owes_me=owes_me,
-            settlements=settlements
         )
     finally:
         conn.close()
@@ -357,10 +342,17 @@ def add_group_expense(group_id):
             flash("Group expense added.", "success")
             return redirect(url_for("group.group_detail", group_id=group_id))
 
+        categories = conn.execute("""
+            SELECT name FROM categories
+            WHERE user_id IS NULL OR user_id = ?
+            ORDER BY user_id IS NULL DESC, name ASC
+        """, (user_id,)).fetchall()
+
         return render_template(
             "groups/add_expense.html",
             group=group,
-            members=members
+            members=members,
+            categories=categories
         )
     finally:
         conn.close()
@@ -398,23 +390,31 @@ def invite_member(group_id):
             flash("User not found.", "danger")
             return redirect(url_for("group.group_detail", group_id=group_id))
 
-        existing = conn.execute("""
-            SELECT *
-            FROM group_members
+        already_member = conn.execute("""
+            SELECT id FROM group_members
             WHERE group_id = ? AND user_id = ?
         """, (group_id, user["id"])).fetchone()
 
-        if existing:
+        if already_member:
             flash("This user is already in the group.", "warning")
             return redirect(url_for("group.group_detail", group_id=group_id))
 
+        pending = conn.execute("""
+            SELECT id FROM invitations
+            WHERE group_id = ? AND receiver_id = ? AND status = 'pending'
+        """, (group_id, user["id"])).fetchone()
+
+        if pending:
+            flash("An invitation is already pending for this user.", "warning")
+            return redirect(url_for("group.group_detail", group_id=group_id))
+
         conn.execute("""
-            INSERT INTO group_members (group_id, user_id)
-            VALUES (?, ?)
-        """, (group_id, user["id"]))
+            INSERT INTO invitations (group_id, sender_id, receiver_id, status)
+            VALUES (?, ?, ?, 'pending')
+        """, (group_id, current_user_id, user["id"]))
 
         conn.commit()
-        flash("User invited successfully.", "success")
+        flash("Invitation sent. They will see it in Notifications.", "success")
         return redirect(url_for("group.group_detail", group_id=group_id))
     finally:
         conn.close()
@@ -550,13 +550,20 @@ def edit_group_expense(expense_id, group_id):
             flash("Expense updated.", "success")
             return redirect(url_for("group.group_detail", group_id=group_id))
 
+        categories = conn.execute("""
+            SELECT name FROM categories
+            WHERE user_id IS NULL OR user_id = ?
+            ORDER BY user_id IS NULL DESC, name ASC
+        """, (user_id,)).fetchall()
+
         return render_template(
             "groups/edit_expense.html",
             expense=expense,
             group=group,
             group_id=group_id,
             members=members,
-            selected_participant_ids=selected_participant_ids
+            selected_participant_ids=selected_participant_ids,
+            categories=categories
         )
     finally:
         conn.close()
@@ -620,6 +627,147 @@ def delete_group(group_id):
 
         conn.commit()
         flash("Group deleted successfully.", "success")
+        return redirect(url_for("group.list_groups"))
+    finally:
+        conn.close()
+
+
+@group_bp.route("/<int:group_id>/settlements")
+def group_settlements(group_id):
+    if "user_id" not in session:
+        flash("Please login first.", "danger")
+        return redirect(url_for("auth.login"))
+
+    user_id = session["user_id"]
+    conn = get_db_connection()
+
+    try:
+        membership = conn.execute("""
+            SELECT * FROM group_members
+            WHERE group_id = ? AND user_id = ?
+        """, (group_id, user_id)).fetchone()
+
+        if not membership:
+            flash("You are not a member of this group.", "danger")
+            return redirect(url_for("group.list_groups"))
+
+        group = conn.execute("SELECT * FROM groups WHERE id = ?", (group_id,)).fetchone()
+
+        settlements = conn.execute("""
+            SELECT
+                s.*,
+                ge.title AS expense_title,
+                debtor.username AS debtor_name,
+                creditor.username AS creditor_name
+            FROM settlements s
+            JOIN group_expenses ge ON ge.id = s.expense_id
+            JOIN users debtor ON debtor.id = s.debtor_id
+            JOIN users creditor ON creditor.id = s.creditor_id
+            WHERE s.group_id = ?
+            ORDER BY (s.debtor_checked = 1 AND s.creditor_checked = 1) ASC, s.id DESC
+        """, (group_id,)).fetchall()
+
+        return render_template(
+            "groups/settlements.html",
+            group=group,
+            settlements=settlements,
+            user_id=user_id
+        )
+    finally:
+        conn.close()
+
+
+@group_bp.route("/toggle-page/<int:settlement_id>/<int:group_id>", methods=["POST"])
+def toggle_settlement_page(settlement_id, group_id):
+    """Same as toggle_settlement but redirects back to the settlements page."""
+    if "user_id" not in session:
+        flash("Please login first.", "danger")
+        return redirect(url_for("auth.login"))
+
+    user_id = session["user_id"]
+    conn = get_db_connection()
+
+    try:
+        settlement = conn.execute("""
+            SELECT * FROM settlements
+            WHERE id = ? AND group_id = ?
+        """, (settlement_id, group_id)).fetchone()
+
+        if not settlement:
+            flash("Settlement record not found.", "danger")
+            return redirect(url_for("group.group_settlements", group_id=group_id))
+
+        membership = conn.execute("""
+            SELECT * FROM group_members
+            WHERE group_id = ? AND user_id = ?
+        """, (group_id, user_id)).fetchone()
+
+        if not membership:
+            flash("Access denied.", "danger")
+            return redirect(url_for("group.list_groups"))
+
+        if settlement["debtor_id"] == user_id:
+            new_value = 0 if settlement["debtor_checked"] == 1 else 1
+            conn.execute(
+                "UPDATE settlements SET debtor_checked = ? WHERE id = ?",
+                (new_value, settlement_id)
+            )
+            flash("Payment confirmation updated.", "success")
+
+        elif settlement["creditor_id"] == user_id:
+            new_value = 0 if settlement["creditor_checked"] == 1 else 1
+            conn.execute(
+                "UPDATE settlements SET creditor_checked = ? WHERE id = ?",
+                (new_value, settlement_id)
+            )
+            flash("Receipt confirmation updated.", "success")
+
+        else:
+            flash("You are not part of this settlement.", "danger")
+            return redirect(url_for("group.group_settlements", group_id=group_id))
+
+        conn.commit()
+        return redirect(url_for("group.group_settlements", group_id=group_id))
+    finally:
+        conn.close()
+
+
+@group_bp.route("/<int:group_id>/leave", methods=["POST"])
+def leave_group(group_id):
+    if "user_id" not in session:
+        flash("Please login first.", "danger")
+        return redirect(url_for("auth.login"))
+
+    user_id = session["user_id"]
+    conn = get_db_connection()
+
+    try:
+        group = conn.execute("SELECT * FROM groups WHERE id = ?", (group_id,)).fetchone()
+
+        if not group:
+            flash("Group not found.", "danger")
+            return redirect(url_for("group.list_groups"))
+
+        if group["created_by"] == user_id:
+            flash("You are the creator. Delete the group instead of leaving.", "warning")
+            return redirect(url_for("group.group_detail", group_id=group_id))
+
+        membership = conn.execute("""
+            SELECT * FROM group_members
+            WHERE group_id = ? AND user_id = ?
+        """, (group_id, user_id)).fetchone()
+
+        if not membership:
+            flash("You are not a member of this group.", "danger")
+            return redirect(url_for("group.list_groups"))
+
+        conn.execute("""
+            DELETE FROM group_members
+            WHERE group_id = ? AND user_id = ?
+        """, (group_id, user_id))
+
+        conn.commit()
+        flash("You have left the group. Your past records remain visible to others.", "success")
         return redirect(url_for("group.list_groups"))
     finally:
         conn.close()
