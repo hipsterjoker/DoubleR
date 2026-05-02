@@ -5,6 +5,20 @@
 
 ---
 
+##  Problem Statement
+
+Managing shared expenses between friends, roommates, or travel groups is a common
+source of confusion and conflict. Existing tools like Splitwise require mobile apps
+and account setups that can be cumbersome. Meanwhile, personal budget tracking is
+often done in separate tools with no connection to group spending.
+
+**DoubleR** solves this by providing a single, lightweight web application where
+users can track both personal budgets and group expenses — with automatic debt
+calculation, settlement tracking, and invitation-based group membership — all
+accessible from any browser without installing anything.
+
+---
+
 ##  Project Description
 
 **DoubleR** allows users to track both personal and group expenses through a clean,  
