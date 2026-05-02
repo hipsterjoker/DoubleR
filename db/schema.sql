@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS settlements;
 DROP TABLE IF EXISTS expense_participants;
 DROP TABLE IF EXISTS group_expenses;
 DROP TABLE IF EXISTS personal_expenses;
+DROP TABLE IF EXISTS invitations;
+DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS group_members;
 DROP TABLE IF EXISTS groups;
 DROP TABLE IF EXISTS users;
@@ -101,3 +103,29 @@ CREATE TABLE personal_plan_expenses (
     FOREIGN KEY (plan_id) REFERENCES personal_plans(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE invitations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER NOT NULL,
+    sender_id INTEGER NOT NULL,
+    receiver_id INTEGER NOT NULL,
+    status TEXT DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES groups(id),
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    name TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+INSERT INTO categories (user_id, name) VALUES
+    (NULL, 'Food'),
+    (NULL, 'Transport'),
+    (NULL, 'Shopping'),
+    (NULL, 'Rent'),
+    (NULL, 'Other');
